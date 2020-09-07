@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Annotator</title>
+
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body id="body">
+<div class="bodywrap" id="bodywrap">
+<!-- bodywrap start -->
+
+
+
+<!-- <div class="pt-5"><p></p></div> -->
+
+<!-- NavBar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top" id="navbar">
+    <button class="navbar-toggler" type="button" v-on:click="toggle_nav" :class="{'collapsed': ui.nav_collapsed}">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="the_navbar_toggler" :class="{'show': !ui.nav_collapsed}">
+        <span class="navbar-brand">Annotator</span>
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item" id="tab-of-preview" :class="{'active': mode=='preview'}">
+                <span class="nav-link" v-on:click="switch_mode('preview')">精简模式</span>
+            </li>
+            <li class="nav-item" id="tab-of-detailed" :class="{'active': mode=='detailed'}">
+                <span class="nav-link" v-on:click="switch_mode('detailed')">详细模式</span>
+            </li>
+            <li class="nav-item" id="tab-of-raw" :class="{'active': mode=='raw'}">
+                <span class="nav-link" v-on:click="switch_mode('raw')">源码模式</span>
+            </li>
+        </ul>
+        <ul class="navbar-nav mt-2 mt-lg-0">
+            <li class="nav-item" id="tab-of-file" :class="{'active': mode=='file'}">
+                <span class="nav-link" v-on:click="switch_mode('file')">文件选择</span>
+            </li>
+            <li class="nav-item" id="tab-of-settings" :class="{'active': mode=='settings'}">
+                <span class="nav-link" v-on:click="switch_mode('settings');load_task_settings();">设置</span>
+            </li>
+            <li class="nav-item" id="tab-of-about">
+                <span class="nav-link">说明</span>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+
+    <div class="container my-5 page rounded" id="page-test"><div class="container py-4">
+        <div class="row">
+            <div class="btn-group col-md-4 my-2">
+                <button type="button" name="do_toggle" id="do_toggle" class="btn btn-secondary" v-on:click="toggle_modal">显示模态框</button>
+            </div>
+        </div>
+    </div></div>
+
+
+
+    <div class="container my-5 page rounded" id="page-preview" v-if="mode=='preview'"><div class="container py-4">
+        <div class="row my-4 hidden">
+            <div class="col">
+                <h3>精简模式</h3>
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col">
+                <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" :style="`width: ${data_done_pct};`" :aria-valuenow="data_done_len" aria-valuemin="0" :aria-valuemax="data_len">{{ data_len ? `${data_done_len}/${data_len}` : `` }}</div>
+                </div>
+            </div>
+        </div>
+        <div v-for="da in data" class="row my-4">
+            <div class="col">
+                <div>{{da.text}}</div>
+                <div>{{da.annotated}}</div>
+                <div>{{da.xml}}</div>
+            </div>
+        </div>
+    </div></div>
+
+
+
+    <div class="container my-5 page rounded" id="page-detailed" v-if="mode=='detailed'"><div class="container py-4">
+        <div class="row my-4">
+            <div class="col">
+                <h3>详细模式</h3>
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col">
+                <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" :style="`width: ${data_done_pct};`" :aria-valuenow="data_done_len" aria-valuemin="0" :aria-valuemax="data_len">{{ data_len ? `${data_done_len}/${data_len}` : `` }}</div>
+                </div>
+            </div>
+        </div>
+    </div></div>
+
+
+
+    <div class="container my-5 page rounded" id="page-raw" v-if="mode=='raw'"><div class="container py-4">
+        <div class="row my-4">
+            <div class="col">
+                <h3>源码模式</h3>
+            </div>
+        </div>
+        <div class="row my-4">
+            <div class="col">
+                <textarea class="form-control form-control-sm" rows="20" v-model="current_file_content"></textarea>
+            </div>
+        </div>
+    </div></div>
+
+
+
+    <div class="container my-5 page rounded" id="page-file" v-if="mode=='file'"><div class="container py-4">
+        <div class="row my-4">
+            <div class="col">
+                <h3>文件选择</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <form name="file-form" class="container">
+                    <div class="row" id="filePicker">
+                        <!-- <label for="file-input" class="col-md-2 my-2 col-form-label text-md-right">选择文件：</label> -->
+                        <div class="col-md-8 my-2">
+                            <input type="file" class="form-control" name="file-input" id="file-input" name="file" multiple="multiple" accept="text/xml" ref="file_element"/>
+                        </div>
+                        <div class="btn-group col-md-4 my-2">
+                            <button type="button" name="do_import" id="do_import" class="btn btn-primary" v-on:click="do_import">导入</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row my-4">
+            <div class="col">
+                <ul class="list-group">
+                    <li v-for="file in file_list" class="list-group-item">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col"><span>{{file.name}}</span></div>
+                                <div class="col text-right">
+                                    <div class="btn-group" role="group" aria-label="Basic example">
+                                        <button type="button" class="btn btn-secondary" v-on:click="load_file(file)">加载</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div></div>
+
+
+
+    <div class="container my-5 page rounded" id="page-settings" v-if="mode=='settings'"><div class="container py-4">
+        <div class="row my-4">
+            <div class="col">
+                <h3>设置</h3>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col">
+                <p>此页可以对标注任务中的细节进行设定。</p>
+                <p>暂时只支持以直接编辑 JSON 代码的形式来进行设置。</p>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col">
+                <textarea class="form-control form-control-sm" rows="20" v-model="task_json"></textarea>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col">
+                <button type="button" class="btn btn-sm btn-primary" v-on:click="switch_mode('');switch_mode('settings');load_task_settings();">复原</button>
+                <button type="button" class="btn btn-sm btn-primary" v-on:click="apply_task_settings();">应用</button>
+            </div>
+        </div>
+    </div></div>
+
+
+
+<!-- Modal -->
+<transition name = "modal-fade"><div v-show="ui.modal_open" class="modal-wrap">
+<div class="modal-backdrop show"></div>
+<div class="modal" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" style="display: block;" aria-modal="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalScrollableTitle">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" v-on:click="toggle_modal">×</span>
+                </button>
+            </div>
+            <div class="modal-body"><div>
+                <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+                <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+                <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+                <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+                <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+            </div></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" v-on:click="toggle_modal">Close</button>
+                <button type="button" class="btn btn-sm btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div></transition>
+
+
+<!-- Alert -->
+<div class="alert-wrap" style="display: block;" ref="alert_wrap">
+    <transition name = "fade" v-for="alert in ui.alerts"><div v-show = "alert.show" class="alert alert-dismissible alert-success" :class="'alert-'+alert.class">
+        <button type="button" class="close" v-on:click="remove_alert(alert.idx)">&times;</button>
+        <div v-html="alert.html"></div>
+    </div></transition>
+</div>
+
+
+
+
+<!-- <footer class="pt-4 pb-2 bg-dark text-white" id="footer">
+    <div class="container text-center">
+        <p>Github: <a href="https://github.com/gitforziio" target="_blank">@gitforziio</a></p>
+    </div>
+</footer> -->
+
+<script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+<!-- <script src="https://cdn.bootcss.com/popper.js/1.16.1/esm/popper.min.js"></script> -->
+<!-- <script src="https://cdn.bootcss.com/d3/5.12.0/d3.min.js"></script> -->
+
+<script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+<script type="text/javascript" src="js/FileSaver.js"></script>
+<script type="text/javascript" src="js/xml2js.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+
+
+
+<!-- bodywrap end -->
+</div>
+</body>
+</html>
