@@ -1,0 +1,116 @@
+
+
+.bang {
+    /*font-size: 12px;*/
+    background: #eee;
+    margin: 0.25em 0;
+    padding: 0.25em;
+}
+
+.bangview {
+    /*font-size: 12px;*/
+    /*background: #eee;*/
+    border: 1px solid #eee;
+    margin: 0.25em 0;
+    padding: 0.25em;
+}
+
+.bang .bang-flex,
+.bangview .bang-flex {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;/* flex-end;*/
+    justify-content: center;
+}
+
+.bang .text-content,
+.bangview .text-content {
+    color: #000;
+}
+
+.bang .frag,
+.bangview .frag {
+    display: block;
+    color: #222;
+    border: 1px solid #eee;
+    border-radius: 3px;
+    min-width: 0.8em;
+}
+
+.bang .frag {
+    margin: 2px 1px;
+    padding: 1px;
+    background: #fff;
+    border: 1px solid #eee;
+}
+
+.bangview .frag {
+    margin: 2px 0;
+    padding: 0;
+}
+
+.bang .frag:hover {
+    border: 1px dashed #f00;
+    cursor: pointer;
+}
+
+.bang .char {
+    background: #fff;
+    color: #222;
+    line-height: 1;
+}
+
+.bangview .char {
+    line-height: 1;
+}
+
+.bang .attr-key,
+.bangview .attr-key {
+    background: #fff;
+    color: #222;
+}
+
+.bang .attr-value,
+.bangview .attr-value {
+    background: #fff;
+    color: #222;
+}
+
+.bang .box,
+.bangview .box {
+    background: #fff;
+    border: 1px solid #888;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.bangview .box {
+    margin: 1px;
+    padding: 1px;
+}
+
+.bang .box-constant,
+.bangview .box-constant {
+    background: #E1F7FF;
+    border: 1px solid #20C0FF;
+    color: #20C0FF;
+}
+
+.bang .box-variable,
+.bangview .box-variable {
+    background: #E7FFCE;
+    border: 1px solid #69C40A;
+    color: #69C40A;
+}
+
+.bang .name,
+.bangview .name {
+    font-size: 0.6em;
+}
+
+
+

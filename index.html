@@ -10,6 +10,7 @@
 
     <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet" type="text/css">
+    <link href="css/bang.css" rel="stylesheet" type="text/css">
 
 </head>
 
@@ -78,11 +79,17 @@
                 </div>
             </div>
         </div>
-        <div v-for="da in data" class="row my-4">
-            <div class="col">
-                <div>{{da.text}}</div>
-                <div>{{da.annotated}}</div>
-                <div>{{da.xml}}</div>
+        <div v-for="(da,i) in data" class="row my-5 the_data_row">
+            <div class="col-12 col-lg-1">
+            </div>
+            <div class="col-12 col-lg-9">
+                <div>【{{i}}】 {{da.text}}</div>
+                <div class="bangview"><bangview :tree_obj="da.tree_obj" :bang_obj="da.bang_obj"></bangview></div>
+                <!-- <div>{{da.xml}}</div> -->
+                <!-- <div class="bang"><bang :tree_obj="da.tree_obj"></bang></div> -->
+            </div>
+            <div class="col-12 col-lg-2">
+                <div><button type="button" class="btn btn-sm btn-secondary" v-on:click="editor_load(i);ui.modal_open=1;">编辑</button> <button type="button" class="btn btn-sm" :class="da.annotated==1?'btn-light':'btn-danger'" v-on:click="da.annotated = 1-da.annotated">{{da.annotated==1 ? "已标" : "未标"}}</button></div>
             </div>
         </div>
     </div></div>
@@ -195,24 +202,30 @@
 <transition name = "modal-fade"><div v-show="ui.modal_open" class="modal-wrap">
 <div class="modal-backdrop show"></div>
 <div class="modal" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" style="display: block;" aria-modal="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalScrollableTitle">Modal title</h5>
+                <h5 class="modal-title" id="exampleModalScrollableTitle">编辑详情</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" v-on:click="toggle_modal">×</span>
                 </button>
             </div>
-            <div class="modal-body"><div>
-                <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-                <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
-                <p>Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
-                <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-                <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+            <div class="modal-body"><div class="modal-body-content">
+                <h5>原始文本</h5>
+                <p>{{editor.current_item.text}}</p>
+                <!-- <div class="bangview"><bangview :tree_obj="editor.current_item.tree_obj"></bangview></div> -->
+                <h5>结构</h5>
+                <p><bang :tree_obj="editor.current_item.tree_obj" :bang_obj="editor.current_item.bang_obj" @childmsg="push_alert"></bang></p>
+                <h5>XML源码（只读）</h5>
+                <p>{{editor.current_item.xml}}</p>
             </div></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" v-on:click="toggle_modal">Close</button>
-                <button type="button" class="btn btn-sm btn-primary">Save changes</button>
+                <button type="button" class="btn btn-sm btn-light" v-on:click="editor_load_last">⏮</button>
+                <button type="button" class="btn btn-sm btn-light" v-on:click="editor_load_next">⏭</button>
+                <div class="mx-5"></div>
+                <button type="button" class="btn btn-sm" :class="editor.current_item.annotated?'btn-light':'btn-danger'" v-on:click="editor.current_item.annotated = 1-editor.current_item.annotated">{{editor.current_item.annotated ? "已标" : "未标"}}</button>
+                <button type="button" class="btn btn-sm btn-primary">保存更改</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal" v-on:click="toggle_modal">关闭(未保存)</button>
             </div>
         </div>
     </div>
@@ -229,6 +242,8 @@
 </div>
 
 
+<!-- Loading -->
+<div class="loading-mask" :class="'loading-end'" id="loading-mask" ref="loading_mask"><div class="loading-text">…加载中…</div></div>
 
 
 <!-- <footer class="pt-4 pb-2 bg-dark text-white" id="footer">
@@ -241,9 +256,10 @@
 <!-- <script src="https://cdn.bootcss.com/popper.js/1.16.1/esm/popper.min.js"></script> -->
 <!-- <script src="https://cdn.bootcss.com/d3/5.12.0/d3.min.js"></script> -->
 
-<script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+<!-- <script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script> -->
 <script type="text/javascript" src="js/FileSaver.js"></script>
 <script type="text/javascript" src="js/xml2js.js"></script>
+<script type="text/javascript" src="js/bang.js"></script>
 <script type="text/javascript" src="js/app.js"></script>
 
 

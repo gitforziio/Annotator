@@ -20,11 +20,47 @@ p:last-child {
     max-height: calc(90vh - 6rem);
     overflow-y: scroll;
 }
+
+
+.the_data_row {
+    /*margin: 1rem 0;*/
+    align-items: center;/* flex-end;*/
+    justify-content: center;
+}
+
+.loading-mask {
+    z-index: 9999;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    background: #343a40;
+    color: #fff;
+    font-size: 6rem;
+    font-weight: bolder;
+    text-align: center;
+}
+
+.loading-mask .loading-text {
+    margin: 0 auto;
+    padding-top: 30vh;
+}
+
+.loading-end {
+    display: none;
+}
+
+
 .modal-header, .modal-footer {
     padding: 0.5rem 1rem;
 }
 .modal-body {
     padding: 1.5rem 1rem;
+}
+.modal-body-content {
+    min-height: 80vh;
 }
 .alert-wrap {
     position: fixed;
